@@ -7,10 +7,10 @@ serverSocket = socket(AF_INET, SOCK_STREAM)
 #Prepare a sever socket
 
 #Sets the serverPort integer variable to a suitable port
-serverPort = 6000
+serverPort = 6787
 
 #Bind Socket to an address. Format determined by family(AF_INET above)
-serverSocket.bind(('49.195.49.211', serverPort)) 
+serverSocket.bind(("", serverPort)) 
 
 #Tell socket to listen to up to 1 connection at a time
 serverSocket.listen(1)
@@ -23,7 +23,8 @@ while True:
     connectionSocket, addr = serverSocket.accept()          
     try:
         #Take data recieved from client and store in variable message
-        message = connectionSocket.recv(1024)  #Fill in start                        
+        message = connectionSocket.recv(1024)
+        print('message recieved')
         #filename is the 2nd item in HTTP header
         filename = message.split()[1]                 
         
@@ -31,7 +32,7 @@ while True:
         f = open(filename[1:])                        
         
         #Put data from the read file into variable outputdata
-        outputdata = f.read                 
+        outputdata = f.read()                 
         #Send one HTTP header line into socket
         connectionSocket.send("HTTP/1.1 200 OK\r\n\r\n".encode())
                        
@@ -39,15 +40,15 @@ while True:
         for i in range(0, len(outputdata)):           
             connectionSocket.send(outputdata[i].encode())
         connectionSocket.send("\r\n".encode())
-        
+        print('file sent')
         #Close client socket
         connectionSocket.close()
         
     except IOError:
         #Send response message for file not found
-        connectionSocket.send("HTTP/1.1 404 Not Found\r\n\r\n".encode)
+        connectionSocket.send("HTTP/1.1 404 Not Found\r\n\r\n".encode())
         connectionSocket.send("<html><head></head><body><h1>404 Not Found</h1></body></html>\r\n".encode())
-
+        print('404 sent')
         
         #Close client socket
         connectionSocket.close()
