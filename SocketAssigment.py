@@ -5,13 +5,18 @@ import sys # In order to terminate the program
 serverSocket = socket(AF_INET, SOCK_STREAM)
 #Prepare a sever socket
 #Fill in start
+#Sets the serverPort integer
+serverPort = 6000
+serverSocket.bind((socket.gethostname(), serverPort)) 
+serverSocket.listen(1)
+
 #Fill in end
 while True:
     #Establish the connection
     print('Ready to serve...')
-    connectionSocket, addr =   #Fill in start              #Fill in end          
+    connectionSocket, addr = serverSocket.accept()          
     try:
-        message =   #Fill in start          #Fill in end               
+        message = connectionSocket.recv(1024)  #Fill in start          #Fill in end               
         filename = message.split()[1]                 
         f = open(filename[1:])                        
         outputdata = #Fill in start       #Fill in end                   
