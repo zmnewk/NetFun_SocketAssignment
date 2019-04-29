@@ -1,27 +1,11 @@
 #import socket module
 from socket import *
 import sys # In order to terminate the program
+import threading
 
-#Create a socket with family and type as default
-serverSocket = socket(AF_INET, SOCK_STREAM)
-#Prepare a sever socket
-
-#Sets the serverPort integer variable to a suitable port
-serverPort = 6787
-
-#Bind Socket to an address. Format determined by family(AF_INET above)
-serverSocket.bind(("", serverPort)) 
-
-#Tell socket to listen to up to 1 connection at a time
-serverSocket.listen(1)
-
-while True:
-    #Establish the connection
-    print('Ready to serve...')
-    
-    #Set up a new connection from the client
-    connectionSocket, addr = serverSocket.accept()          
-    try:
+# function to use for the multithreading
+def respond(connectionSocket):
+	try:
         #Take data recieved from client and store in variable message
         message = connectionSocket.recv(1024)
         print('message recieved')
@@ -52,8 +36,35 @@ while True:
         
         #Close client socket
         connectionSocket.close()
-        
-        
-        
+
+#Create a socket with family and type as default
+serverSocket = socket(AF_INET, SOCK_STREAM)
+#Prepare a sever socket
+
+#Sets the serverPort integer variable to a suitable port
+serverPort = 6787
+
+#Bind Socket to an address. Format determined by family(AF_INET above)
+serverSocket.bind(("", serverPort)) 
+
+#Tell socket to listen to up to 1 connection at a time
+serverSocket.listen(1)
+
+while True:
+    #Establish the connection
+    print('Ready to serve...')
+    
+    #Set up a new connection from the client
+    connectionSocket, addr = serverSocket.accept()          
+	
+	# create a new thread, using the respond function, and passing in the socket for the client
+	t = threading.Thread(target = respond, args = (connectionSocket))
+	
+	# mark the thread as a daemon ->  a computer program that runs as a background process, rather than being under the direct control of an interactive user. 
+	t.daemon = True
+	
+	# start the thread
+	t.start()
+
 serverSocket.close()
 sys.exit()#Terminate the program after sending the corresponding data                                    
